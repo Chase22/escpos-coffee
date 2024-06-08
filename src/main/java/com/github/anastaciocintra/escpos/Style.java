@@ -134,7 +134,7 @@ public class Style implements EscPosConst {
      *
      * @param fontName used on ESC M n
      * @return this object
-     * @see #getConfigBytes()
+     * @see #getConfigBytes(PrinterFeatures)
      */
     public final Style setFontName(FontName fontName) {
         this.fontName = fontName;
@@ -158,7 +158,7 @@ public class Style implements EscPosConst {
      * @param fontWidth value used on GS ! n
      * @param fontHeight value used on GS ! n
      * @return this object
-     * @see #getConfigBytes()
+     * @see #getConfigBytes(PrinterFeatures)
      */
     public final Style setFontSize(FontSize fontWidth, FontSize fontHeight) {
         this.fontWidth = fontWidth;
@@ -171,7 +171,7 @@ public class Style implements EscPosConst {
      *
      * @param underline value used on ESC – n
      * @return this object
-     * @see #getConfigBytes()
+     * @see #getConfigBytes(PrinterFeatures)
      */
     public final Style setUnderline(Underline underline) {
         this.underline = underline;
@@ -183,7 +183,7 @@ public class Style implements EscPosConst {
      *
      * @param justification value used on ESC a n
      * @return this object
-     * @see #getConfigBytes()
+     * @see #getConfigBytes(PrinterFeatures)
      */
     public final Style setJustification(Justification justification) {
         this.justification = justification;
@@ -196,7 +196,7 @@ public class Style implements EscPosConst {
      * @param lineSpacing value used on ESC 3 n
      * @return this object
      * @throws IllegalArgumentException when lineSpacing is not between 0 and 255.
-     * @see #getConfigBytes()
+     * @see #getConfigBytes(PrinterFeatures)
      */
     public final Style setLineSpacing(int lineSpacing) throws IllegalArgumentException {
         if (lineSpacing < 0 || lineSpacing > 255) {
@@ -211,7 +211,7 @@ public class Style implements EscPosConst {
      * Reset line spacing to printer default used on ESC 2
      *
      * @return this object
-     * @see #getConfigBytes()
+     * @see #getConfigBytes(PrinterFeatures)
      */
     public final Style resetLineSpacing() {
         this.defaultLineSpacing = true;
@@ -274,12 +274,14 @@ public class Style implements EscPosConst {
      * @return ESC/POS commands to configure style
      * @exception IOException if an I/O error occurs.
      */
-    public byte[] getConfigBytes() throws IOException {
+    public byte[] getConfigBytes(PrinterFeatures printerFeatures) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        //
-        bytes.write(ESC);
-        bytes.write('M');
-        bytes.write(fontName.value);
+        if(printerFeatures.supportsFonts()) {
+            //
+            bytes.write(ESC);
+            bytes.write('M');
+            bytes.write(fontName.value);
+        }
         //
         bytes.write(ESC);
         bytes.write('E');

@@ -122,6 +122,7 @@ public class EscPos implements Closeable, Flushable, EscPosConst {
     protected OutputStream outputStream;
     protected String charsetName;
     protected Style style;
+    protected PrinterFeatures printerFeatures;
 
     /**
      * creates an instance based on outputStream.
@@ -130,9 +131,20 @@ public class EscPos implements Closeable, Flushable, EscPosConst {
      * @see java.io.OutputStream
      */
     public EscPos(OutputStream outputStream) {
+        this(outputStream, new PrinterFeatures());
+    }
+
+    /**
+     * creates an instance based on outputStream with a given set of PrinterFeatures
+     * @param outputStream can be one file, System.out or printer...
+     * @param printerFeatures a set of feature toggles for the used printer
+     * @see java.io.OutputStream
+     */
+    public EscPos(OutputStream outputStream, PrinterFeatures printerFeatures) {
         this.outputStream = outputStream;
         this.setCharsetName(CharacterCodeTable.CP437_USA_Standard_Europe.charsetName);
         style = new Style();
+        this.printerFeatures = printerFeatures;
     }
 
     /**
@@ -233,6 +245,24 @@ public class EscPos implements Closeable, Flushable, EscPosConst {
     }
 
     /**
+     * Gets the supported features
+     * @return the actual value
+     * @see PrinterFeatures
+     */
+    public PrinterFeatures getPrinterFeatures() {
+        return printerFeatures;
+    }
+
+    /**
+     * Sets the supported features
+     * @param printerFeatures the actual value
+     * @see PrinterFeatures
+     */
+    public void setPrinterFeatures(PrinterFeatures printerFeatures) {
+        this.printerFeatures = printerFeatures;
+    }
+
+    /**
      * Set charsetName used on encodes of Strings.
      *
      * @param charsetName value used on String.getBytes
@@ -320,7 +350,7 @@ public class EscPos implements Closeable, Flushable, EscPosConst {
      * @see #setCharsetName(java.lang.String)
      */
     public EscPos write(Style style, String text) throws UnsupportedEncodingException, IOException {
-        byte[] configBytes = style.getConfigBytes();
+        byte[] configBytes = style.getConfigBytes(printerFeatures);
         write(configBytes, 0, configBytes.length);
         this.outputStream.write(text.getBytes(charsetName));
         return this;
@@ -482,7 +512,7 @@ public class EscPos implements Closeable, Flushable, EscPosConst {
         if (nLines < 1 || nLines > 255) {
             throw new IllegalArgumentException("nLines must be between 1 and 255");
         }
-        byte[] configBytes = style.getConfigBytes();
+        byte[] configBytes = style.getConfigBytes(printerFeatures);
         write(configBytes, 0, configBytes.length);
         for(int n = 0; n < nLines; n++){
             write(LF);
