@@ -230,6 +230,9 @@ public class Style implements EscPosConst {
         return this;
     }
 
+
+
+
     /**
      * Configure font Style.
      * <p>
@@ -271,6 +274,55 @@ public class Style implements EscPosConst {
      * Turn white/black reverse print mode on/off<p>
      * ASCII GS B n
      *
+     * @return ESC/POS commands to configure style
+     * @exception IOException if an I/O error occurs.
+     */
+    public byte[] getConfigBytes() throws IOException {
+        return getConfigBytes(new PrinterFeatures());
+    }
+
+    /**
+     * Configure font Style.
+     * <p>
+     * Select character font.
+     * <p>
+     * ASCII ESC M n
+     * <p>
+     *
+     * Turn emphasized(bold) mode on/off.
+     * <p>
+     * ASCII ESC E n
+     * <p>
+     *
+     * set font size.
+     * <p>
+     * ASCII GS ! n
+     * <p>
+     *
+     * select underline mode
+     * <p>
+     * ASCII ESC – n
+     * <p>
+     *
+     * Select justification
+     * <p>
+     * ASCII ESC a n
+     * <p>
+     *
+     * Select default line spacing
+     * <p>
+     * ASCII ESC 2
+     * <p>
+     *
+     * Set line spacing
+     * <p>
+     * ASCII ESC 3 n
+     * <p>
+     *
+     * Turn white/black reverse print mode on/off<p>
+     * ASCII GS B n
+     *
+     * @param printerFeatures Toggle certain Style Features
      * @return ESC/POS commands to configure style
      * @exception IOException if an I/O error occurs.
      */
